@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export default function AssetTable({ assets, onRefresh }) {
+  const navigate = useNavigate();
+
   return (
     <div className="rounded-xl border border-slate-800 overflow-hidden">
       <table className="w-full">
@@ -15,6 +19,7 @@ export default function AssetTable({ assets, onRefresh }) {
           {assets.map((asset) => (
             <tr
               key={asset.id}
+              onClick={() => navigate(`/assets/${asset.id}`)}
               className="hover:bg-slate-800/50 transition-colors cursor-pointer"
             >
               <td className="px-6 py-4 text-sm text-slate-200">{asset.asset_name}</td>

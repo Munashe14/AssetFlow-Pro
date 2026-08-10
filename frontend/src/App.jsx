@@ -13,6 +13,7 @@ import UsersPage from "./pages/UsersPage";
 import Departmentspage from "./pages/DepartmentsPage";
 import CreateAccountPage from "./pages/CreateAccountPage";
 import DepreciationPage from "./pages/DepreciationPage";
+import AssetDetailPage from "./pages/AssetDetailPage";
 
 function PrivateRoute({children}) {
   const token = localStorage.getItem("access_token");
@@ -33,6 +34,7 @@ export default function App(){
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />}/>
           <Route path="assets" element={<AssetsPage />}/>
+          <Route path="assets/:id" element={<AssetDetailPage />}/>
           <Route path="checkouts" element={<CheckoutsPage />}/>
           <Route path="maintenance" element={<MaintenancePage />}/>
           <Route path="repairs" element={<RepairsPage/>}/>

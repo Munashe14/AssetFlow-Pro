@@ -32,10 +32,18 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, index=True)
-    email = Column(String, unique=True, index=True)
-    password = Column(String)  # In a real application, passwords should be hashed!
-    role = Column(String, default="storekeeper")  # Default role is storekeeper
+    username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)
+    role = Column(String, nullable=False, default="storekeeper")
+    department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
+
+    def __init__(self, username, email, password, role="storekeeper", department_id=None):
+        self.username = username
+        self.email = email
+        self.password = password
+        self.role = str(role).strip().lower()
+        self.department_id = department_id
 
 
 class Department(Base):
@@ -143,6 +151,20 @@ class Notification(Base):
     is_read = Column(Boolean, default=False)
 
     transaction_id = Column(Integer, ForeignKey("checkouts.id"), nullable=True)
+
+
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    user_name = Column(String, nullable=True)
+    action = Column(String, nullable=False, index=True)
+    resource_type = Column(String, nullable=False, index=True)
+    resource_id = Column(Integer, nullable=True, index=True)
+    details = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    ip_address = Column(String, nullable=True)
 
 
 class NotificationOut(BaseModel):

@@ -8,15 +8,19 @@ const getUsers    = ()          => api.get("/users/");
 const createUser  = (data)      => api.post("/users/", data);
 const deleteUser  = (id)        => api.delete(`/users/${id}`);
 
-const ROLES = ["admin", "storekeeper"];
+const ROLES = ["admin", "manager", "storekeeper", "employee"];
 
 const ROLE_CONFIG = {
   admin:       { label: "Admin",       classes: "text-teal-400  bg-teal-500/15  border-teal-500/40"  },
+  manager:     { label: "Manager",     classes: "text-purple-400 bg-purple-500/15 border-purple-500/40" },
   storekeeper: { label: "Storekeeper", classes: "text-blue-400  bg-blue-500/15  border-blue-500/40"  },
+  employee:    { label: "Employee",    classes: "text-amber-400 bg-amber-500/15 border-amber-500/40" },
 };
 
 function RoleBadge({ role }) {
-  const cfg = ROLE_CONFIG[role] || ROLE_CONFIG.storekeeper;
+  const normalizedRole = String(role || "").toLowerCase();
+  const cfg = ROLE_CONFIG[normalizedRole] || ROLE_CONFIG.storekeeper;
+
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium border ${cfg.classes}`}>
       {cfg.label}
@@ -26,9 +30,9 @@ function RoleBadge({ role }) {
 
 const EMPTY_FORM = {
   username: "",
-  email:    "",
+  email: "",
   password: "",
-  role:     "storekeeper",
+  role: "storekeeper",
 };
 
 export default function UsersPage() {
@@ -63,14 +67,22 @@ export default function UsersPage() {
 
   async function handleCreate(e) {
     e.preventDefault();
+
     if (!form.username || !form.email || !form.password) {
       setError("Username, email and password are required.");
       return;
     }
+
+    const payload = {
+      ...form,
+      role: String(form.role || "").toLowerCase(),
+    };
+
     setSubmitting(true);
     setError("");
+
     try {
-      await createUser(form);
+      await createUser(payload);
       setShowForm(false);
       setForm(EMPTY_FORM);
       load();
@@ -93,11 +105,18 @@ export default function UsersPage() {
     }
   }
 
-  const filtered = users.filter(u =>
-    u.username.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase()) ||
-    u.role.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = users.filter(u => {
+    const username = String(u.username || "").toLowerCase();
+    const email = String(u.email || "").toLowerCase();
+    const role = String(u.role || "").toLowerCase();
+    const searchValue = search.toLowerCase();
+
+    return (
+      username.includes(searchValue) ||
+      email.includes(searchValue) ||
+      role.includes(searchValue)
+    );
+  });
 
   return (
     <div className="space-y-6">
@@ -202,8 +221,10 @@ export default function UsersPage() {
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 pt-2">
         {ROLES.map(role => {
-          const count = users.filter(u => u.role === role).length;
-          const cfg   = ROLE_CONFIG[role] || ROLE_CONFIG.storekeeper;
+          const normalizedRole = role.toLowerCase();
+          const count = users.filter(u => String(u.role || "").toLowerCase() === normalizedRole).length;
+          const cfg = ROLE_CONFIG[normalizedRole] || ROLE_CONFIG.storekeeper;
+
           return (
             <div
               key={role}

@@ -33,6 +33,37 @@ def ensure_user_role_column():
         if "role" not in columns:
             cur.execute("ALTER TABLE users ADD COLUMN role VARCHAR DEFAULT 'storekeeper'")
             conn.commit()
+        if "department_id" not in columns:
+            cur.execute("ALTER TABLE users ADD COLUMN department_id INTEGER")
+            conn.commit()
+    finally:
+        conn.close()
+
+
+def ensure_audit_log_table():
+    import sqlite3
+
+    conn = sqlite3.connect("assets.db")
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='audit_logs'")
+        if cur.fetchone() is None:
+            cur.execute(
+                """
+                CREATE TABLE audit_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    user_name VARCHAR,
+                    action VARCHAR NOT NULL,
+                    resource_type VARCHAR NOT NULL,
+                    resource_id INTEGER,
+                    details VARCHAR,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    ip_address VARCHAR
+                )
+                """
+            )
+            conn.commit()
     finally:
         conn.close()
 
@@ -54,6 +85,8 @@ def ensure_asset_columns():
         if "status" not in columns:
             cur.execute("ALTER TABLE assets ADD COLUMN status VARCHAR DEFAULT 'available'")
             conn.commit()
+        cur.execute("UPDATE assets SET status = 'available' WHERE status IS NULL OR status = '' OR LOWER(status) = 'unknown'")
+        conn.commit()
         if "purchase_date" not in columns:
             cur.execute("ALTER TABLE assets ADD COLUMN purchase_date VARCHAR")
             conn.commit()

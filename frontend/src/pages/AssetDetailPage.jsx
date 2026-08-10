@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getAsset, getAssetDepreciation, getAssetMaintanence, getAssetRepairs } from "../api/asset";
 import { checkoutAsset, returnAssetByAssetId, returnAsset } from "../api/checkout";
-import { getEmployees } from "../api/employee";
+import { getCurrentEmployee } from "../api/employee";
 import AssetCodeCard from "../components/AssetCodeCard";
 import StatusBadge from "../components/StatusBadge";
 import AssetTagChip from "../components/AssetTagChip";
@@ -21,6 +21,7 @@ export default function AssetDetailPage() {
     const [maintanence, setMaintanence] = useState([]);
     const [repairs, setRepairs] = useState([]);
     const [employees, setEmployees] = useState([]);
+    const [currentEmployee, setCurrentEmployee] = useState(null);
     const [tab, setTab] = useState("overview");
     const [loading, setLoading] = useState(true);
     const [showCheckout, setShowCheckout] = useState(false);
@@ -34,27 +35,33 @@ export default function AssetDetailPage() {
             setLoading(true);
             setError("");
             try {
-                const [assetRes, depRes, maintRes, repairRes, empRes] = await Promise.all([
-                    getAsset(id),
+                const assetRes = await getAsset(id);
+                setAsset(assetRes.data);
+
+                const [depRes, maintRes, repairRes, empRes] = await Promise.all([
                     getAssetDepreciation(id).catch(() => null),
-                    getAssetMaintanence(id),
-                    getAssetRepairs(id),
-                    getEmployees(),
+                    getAssetMaintanence(id).catch(() => ({ data: [] })),
+                    getAssetRepairs(id).catch(() => ({ data: [] })),
+                    getCurrentEmployee().catch(() => null),
                 ]);
 
-                setAsset(assetRes.data);
                 setDepreciation(depRes?.data || null);
                 setMaintanence(maintRes.data);
                 setRepairs(repairRes.data);
-                setEmployees(empRes.data);
-            } catch {
+                setCurrentEmployee(empRes?.data || null);
+                setEmployees(empRes?.data ? [empRes.data] : []);
+                if (empRes?.data) {
+                    setCheckoutForm(f => ({ ...f, employee_id: String(empRes.data.id) }));
+                }
+            } catch (err) {
+                setAsset(null);
                 setError("Failed to load asset details.");
             } finally {
                 setLoading(false);
             }
         }
 
-        load();
+        if (id) load();
     }, [id]);
 
     async function handleCheckout(e) {
@@ -253,19 +260,25 @@ export default function AssetDetailPage() {
                     <form onSubmit={handleCheckout} className="space-y-3">
                         <div>
                             <label className="text-xs text-slate-500 block mb-1">Employee</label>
-                            <select
-                                value={checkoutForm.employee_id}
-                                onChange={(e) => setCheckoutForm((f) => ({ ...f, employee_id: e.target.value }))}
-                                className="w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-                                required
-                            >
-                                <option value="">Select Employee</option>
-                                {employees.map((emp) => (
-                                    <option key={emp.id} value={emp.id}>
-                                        {emp.first_name} {emp.last_name} - {emp.department}
-                                    </option>
-                                ))}
-                            </select>
+                            {currentEmployee ? (
+                                <div className="w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2">
+                                    {currentEmployee.first_name} {currentEmployee.last_name} - {currentEmployee.department}
+                                </div>
+                            ) : (
+                                <select
+                                    value={checkoutForm.employee_id}
+                                    onChange={(e) => setCheckoutForm((f) => ({ ...f, employee_id: e.target.value }))}
+                                    className="w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                                    required
+                                >
+                                    <option value="">Select Employee</option>
+                                    {employees.map((emp) => (
+                                        <option key={emp.id} value={emp.id}>
+                                            {emp.first_name} {emp.last_name} - {emp.department}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
                         <div>
                             <label className="text-xs text-slate-500 block mb-1">Due Date</label>

@@ -16,6 +16,7 @@ def create_asset(asset: schemas.AssetCreate, db: Session = Depends(get_db), curr
     salvage_value = asset.salvage_value if asset.salvage_value is not None else int(asset.purchase_cost * 0.1)
     useful_life_years = asset.useful_life_years if asset.useful_life_years is not None else 5
     annual_depreciation = int(straight_line_depreciation(asset.purchase_cost, salvage_value, useful_life_years))
+    normalized_status = (asset.status or "available").strip().lower() or "available"
 
     db_asset = models.Asset(
         asset_name=asset.asset_name,
@@ -27,6 +28,7 @@ def create_asset(asset: schemas.AssetCreate, db: Session = Depends(get_db), curr
         salvage_value=salvage_value,
         useful_life_years=useful_life_years,
         annual_depreciation=annual_depreciation,
+        status=normalized_status,
     )
     db.add(db_asset)
     db.commit()
@@ -91,6 +93,7 @@ def update_asset(asset_id: int, asset_update: schemas.AssetCreate, db: Session =
     asset.salvage_value = asset_update.salvage_value if asset_update.salvage_value is not None else int(asset_update.purchase_cost * 0.1)
     asset.useful_life_years = asset_update.useful_life_years if asset_update.useful_life_years is not None else 5
     asset.annual_depreciation = int(straight_line_depreciation(asset.purchase_cost, asset.salvage_value, asset.useful_life_years))
+    asset.status = (asset_update.status or asset.status or "available").strip().lower() or "available"
 
     db.commit()
     db.refresh(asset)

@@ -9,11 +9,11 @@ import Barcode from "react-barcode";
  *      small (bool) - compact variant for tables/lists 
  */
 
-export default function BarcodeDisplay({value}) {
+export default function BarcodeDisplay({value, small = false}) {
     if (!value) return null;
 
-    return(
-        <div className=" bg-white rounded-lg p-3 inline-flex flex-col items-center ">
+    return (
+        <div className="bg-white rounded-lg p-3 inline-flex flex-col items-center">
             <Barcode
                 value={value}
                 format="CODE128"
@@ -22,7 +22,7 @@ export default function BarcodeDisplay({value}) {
                 fontSize={small ? 10 : 12}
                 displayValue={true}
                 margin={4}
-        />
+            />
         </div>
     );
 }

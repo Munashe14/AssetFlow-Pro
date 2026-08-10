@@ -12,7 +12,7 @@ export const getAssetDepreciation = (id) =>
     api.get(`/assets/${id}/depreciation`);
 
 export const getAssetMaintanence = (id) =>
-    api.get(`/maintanence/?asset_id=${id}`);
+    api.get(`/maintenance/?asset_id=${id}`);
 
 export const getAssetRepairs = (id) =>
     api.get(`/repairs/?asset_id=${id}`);

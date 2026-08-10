@@ -10,18 +10,19 @@ import {QRCodeSVG} from "qrcode.react";
  *  size (number) - QR pixel size, default 120
  */
 
-export default function QRDisplay({assetId, assetTag, size=120}) {
-    // Encodes the full URL so any phone camera opens the asset directly
+export default function QRDisplay({assetId, assetTag, size = 120}) {
+    if (!assetId) return null;
 
-    const value = `${window.location.origin} /assets/ ${assetId}`;
+    const value = `${window.location.origin}/assets/${assetId}`;
 
-    return(
+    return (
         <div className="bg-white rounded-lg p-3 inline-flex flex-col items-center gap-1">
-            <QRDisplay
+            <QRCodeSVG
                 value={value}
                 size={size}
                 level="M"
-                includeMargin={true}/>
+                includeMargin={true}
+            />
             <p className="text-center text-xs text-slate-600 font-mono tracking-widest">
                 {assetTag}
             </p>

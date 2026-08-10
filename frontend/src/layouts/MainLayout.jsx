@@ -18,23 +18,48 @@ import {
 } from "react-icons/hi2";
 
 
-const NAV = [
-    {to: "/dashboard", label: "Dashboard", icon: HiOutlineHome},
-    {to: "/assets", label: "Assets", icon: HiOutlineArchiveBox},
-    {to: "/checkouts", label: "Checkouts", icon: HiOutlineArrowUpTray},
-    {to: "/maintenance", label: "Maintenance", icon:HiOutlineWrenchScrewdriver},
-    {to: "/repairs", label: "Repairs", icon: HiOutlineCog6Tooth},
-    {to: "/disposal", label: "Disposal", icon: HiOutlineTrash},
-    {to: "/reports", label: "Reports", icon: HiOutlineChartBar},
-    {to: "/depreciation", label: "Depreciation", icon: HiOutlineCalculator},
-    {to: "/notifications", label: "Notifications", icon: HiOutlineBell},
-    {to: "/users", label: "Users", icon: HiOutlineUsers},
-    {to: "/departments", label: "Departments", icon: HiOutlineBuildingOffice},
-];
+const NAV = {
+    admin: [
+        {to: "/dashboard", label: "Dashboard", icon: HiOutlineHome},
+        {to: "/assets", label: "Assets", icon: HiOutlineArchiveBox},
+        {to: "/checkouts", label: "Checkouts", icon: HiOutlineArrowUpTray},
+        {to: "/maintenance", label: "Maintenance", icon:HiOutlineWrenchScrewdriver},
+        {to: "/repairs", label: "Repairs", icon: HiOutlineCog6Tooth},
+        {to: "/disposal", label: "Disposal", icon: HiOutlineTrash},
+        {to: "/reports", label: "Reports", icon: HiOutlineChartBar},
+        {to: "/depreciation", label: "Depreciation", icon: HiOutlineCalculator},
+        {to: "/notifications", label: "Notifications", icon: HiOutlineBell},
+        {to: "/users", label: "Users", icon: HiOutlineUsers},
+        {to: "/departments", label: "Departments", icon: HiOutlineBuildingOffice},
+    ],
+    manager: [
+        {to: "/dashboard", label: "Dashboard", icon: HiOutlineHome},
+        {to: "/assets", label: "Assets", icon: HiOutlineArchiveBox},
+        {to: "/checkouts", label: "Checkouts", icon: HiOutlineArrowUpTray},
+        {to: "/maintenance", label: "Maintenance", icon:HiOutlineWrenchScrewdriver},
+        {to: "/reports", label: "Reports", icon: HiOutlineChartBar},
+        {to: "/notifications", label: "Notifications", icon: HiOutlineBell},
+    ],
+    storekeeper: [
+        {to: "/dashboard", label: "Dashboard", icon: HiOutlineHome},
+        {to: "/assets", label: "Assets", icon: HiOutlineArchiveBox},
+        {to: "/checkouts", label: "Checkouts", icon: HiOutlineArrowUpTray},
+        {to: "/maintenance", label: "Maintenance", icon:HiOutlineWrenchScrewdriver},
+        {to: "/reports", label: "Reports", icon: HiOutlineChartBar},
+    ],
+    employee: [
+        {to: "/dashboard", label: "Dashboard", icon: HiOutlineHome},
+        {to: "/assets", label: "My Assets", icon: HiOutlineArchiveBox},
+        {to: "/maintenance", label: "Maintenance", icon:HiOutlineWrenchScrewdriver},
+        {to: "/notifications", label: "Notifications", icon: HiOutlineBell},
+    ],
+};
 
 export default function MainLayout() {
     const [open, setOpen] = useState(true);
     const {logout, role} = useAuth();
+    const normalizedRole = (role || "storekeeper").toLowerCase();
+    const navItems = NAV[normalizedRole] || NAV.storekeeper;
     const navigate = useNavigate();
   
 
@@ -55,7 +80,7 @@ export default function MainLayout() {
         </div>
 
         <nav className="flex-1  py-3 space-y-0.5 px-2 overflow-y-auto">
-            {NAV.map(({to, label, icon: Icon}) =>(
+            {navItems.map(({to, label, icon: Icon}) =>(
                 <NavLink key={to}
                 to ={to}
                 className={({ isActive }) =>
@@ -75,7 +100,7 @@ export default function MainLayout() {
         }`}>
             <div className="w-7 h-7 rounded-full bg-teal-600 flex items-center justify-center
             shrink-0 text-xs font-bold text-white">
-                {role === "admin" ? "A" : "S"}
+                {normalizedRole.charAt(0).toUpperCase()}
             </div>
             {open && (
                 <div className="flex-1 min-w-0">

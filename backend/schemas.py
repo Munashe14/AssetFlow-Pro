@@ -1,8 +1,12 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, EmailStr, field_validator
+from typing import Optional, Any
 from enum import Enum
+
+VALID_ROLES = {"admin", "manager", "storekeeper", "employee"}
+DEFAULT_ROLE = "storekeeper"
+
 
 class AssetCreate(BaseModel):
     asset_name: str
@@ -13,6 +17,7 @@ class AssetCreate(BaseModel):
     warranty_expiration_date: Optional[str] = None
     salvage_value: Optional[int] = None
     useful_life_years: Optional[int] = None
+    status: Optional[str] = "available"
 
 class Asset(BaseModel):
     id: int
@@ -27,33 +32,69 @@ class Asset(BaseModel):
     salvage_value: Optional[int] = None
     useful_life_years: Optional[int] = None
     annual_depreciation: Optional[int] = None
+    status: Optional[str] = "available"
 
     class Config:
         from_attributes = True
 
 class UserCreate(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     password: str
-    role: str # Default role is storekeeper
+    role: str = DEFAULT_ROLE
+    department_id: Optional[int] = None
+
+    @field_validator("role")
+    @classmethod
+    def normalize_role(cls, v):
+        value = str(v or "").strip().lower()
+        if value not in VALID_ROLES:
+            raise ValueError("Invalid role")
+        return value
+
 
 class UserOut(BaseModel):
     id: int
     username: str
-    email: str
-    role: str  # Include the role in the output schema
+    email: EmailStr
+    role: str
+    department_id: Optional[int] = None
 
     class Config:
         from_attributes = True
+
 
 class User(BaseModel):
     id: int
     username: str
     email: str
     password: str
+    role: str
+    department_id: Optional[int] = None
 
     class Config:
         from_attributes = True
+
+class EmployeeCreate(BaseModel):
+    employee_number: str
+    first_name: str
+    last_name: str
+    department: str
+    email: EmailStr
+
+class Employee(BaseModel):
+    id: int
+    employee_number: str
+    first_name: str
+    last_name: str
+    department: str
+    email: EmailStr
+
+    class Config:
+        from_attributes = True
+
+class Message(BaseModel):
+    message: str
 
 class Token(BaseModel):
     access_token: str
@@ -154,6 +195,21 @@ class NotificationOut(NotificationResponse):
     is_read: bool
     created_at: datetime
     read_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AuditLog(BaseModel):
+    id: int
+    user_id: Optional[int] = None
+    user_name: Optional[str] = None
+    action: str
+    resource_type: str
+    resource_id: Optional[int] = None
+    details: Optional[str] = None
+    created_at: datetime
+    ip_address: Optional[str] = None
 
     class Config:
         from_attributes = True
