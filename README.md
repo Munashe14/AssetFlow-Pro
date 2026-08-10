@@ -61,7 +61,7 @@ ASSET_MANAGEMENT/
 ### 1. Clone or download the project
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Munashe14/AssetFlow-Pro
 cd ASSET_MANAGEMENT
 ```
 
