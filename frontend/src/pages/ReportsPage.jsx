@@ -1,7 +1,7 @@
 import { getDueReturns, getWarrantyAlerts, exportAssetsPDF, exportAssetsExcel } from "../api/report";
 import { downloadBlob } from "../utils/downloadBlob";
 import { useState, useEffect } from "react";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 export default function ReportPage() {
     const [dueReturns, setDueReturns] = useState([]);

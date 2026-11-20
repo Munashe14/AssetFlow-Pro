@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 import { useAuth } from "../hooks/useAuth";
 import api from "../api/axios";
 

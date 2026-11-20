@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRepairs, createRepair } from "../api/repair";
 import { getAssets } from "../api/asset";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 export default function RepairsPage() {
   const [repairs,   setRepairs]   = useState([]);

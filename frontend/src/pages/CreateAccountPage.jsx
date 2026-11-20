@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../api/user";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 const ROLE_OPTIONS = ["admin", "storekeeper", "manager", "employee"];
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCheckouts, returnAsset } from "../api/checkout";
 import StatusBadge  from "../components/StatusBadge";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 export default function CheckoutsPage() {
   const [checkouts, setCheckouts] = useState([]);

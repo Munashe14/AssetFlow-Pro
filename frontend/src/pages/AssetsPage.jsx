@@ -3,7 +3,7 @@ import {getAssets} from "../api/asset";
 import AssetTable from "../components/AssetTable";
 import AddAssetModal from "../components/AddAssetModal";
 import BarcodeScanner from "../components/BarcodeScanner";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 export default function AssetsPage() {
     const [assets, setAssets]   =useState([]);

@@ -1,5 +1,5 @@
 import { useNotifications } from "../hooks/useNotifications";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 const TYPE_CONFIG = {
   warning:  { dot: "bg-amber-400",  bar: "bg-amber-500",  label: "Warning",  badge: "text-amber-400  bg-amber-500/15  border-amber-500/30"  },

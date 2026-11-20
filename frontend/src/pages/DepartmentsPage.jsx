@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getDepartments, createDepartment, deleteDepartment } from "../api/department";
 import { useAuth } from "../hooks/useAuth";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 export default function DepartmentsPage() {
   const { isAdmin }                     = useAuth();

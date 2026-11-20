@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMaintenance, createMaintenance } from "../api/maintenance";
 import { getAssets } from "../api/asset";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 const MAINTENANCE_TYPES = ["Preventive", "Corrective", "Predictive", "Inspection", "Calibration"];
 

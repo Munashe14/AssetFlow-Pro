@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getDisposals, disposeAsset } from "../api/disposal";
 import { getAssets } from "../api/asset";
-import { Modal, Field, inputClass } from "../components/shared";
+import { Modal, Field, inputClass } from "../components/Shared";
 
 const DISPOSAL_METHODS = ["Sold", "Donated", "Scrapped", "Written Off", "Transferred"];
 
