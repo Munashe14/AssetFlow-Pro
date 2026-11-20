@@ -62,10 +62,10 @@ def health_check():
 
 
 frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
-frontend_assets = frontend_dist / "assets"
+frontend_assets = frontend_dist / "static"
 
 if frontend_assets.is_dir():
-    app.mount("/assets", StaticFiles(directory=frontend_assets), name="frontend-assets")
+    app.mount("/static", StaticFiles(directory=frontend_assets), name="frontend-static")
 
 
 @app.get("/{full_path:path}", include_in_schema=False)
