@@ -11,4 +11,4 @@ export const returnAssetByAssetId = (assetId, data) =>
     api.post(`/checkouts/return/asset/${assetId}`, data);
 
 export const getCheckouts = () =>
-    api.get("/checkouts").then(response => expectArrayResponse(response, "Checkouts"));
+    api.get("/checkouts/").then(response => expectArrayResponse(response, "Checkouts"));
