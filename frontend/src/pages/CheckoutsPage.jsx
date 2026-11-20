@@ -6,13 +6,20 @@ import { Modal, Field, inputClass } from "../components/Shared";
 export default function CheckoutsPage() {
   const [checkouts, setCheckouts] = useState([]);
   const [loading,   setLoading]   = useState(true);
+  const [error, setError] = useState("");
   const [filter,    setFilter]    = useState("all"); // "all" | "checked_out" | "returned" | "overdue"
 
   async function load() {
     setLoading(true);
-    const res = await getCheckouts();
-    setCheckouts(res.data);
-    setLoading(false);
+    setError("");
+    try {
+      const res = await getCheckouts();
+      setCheckouts(res.data);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Failed to load checkouts.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -43,6 +50,7 @@ export default function CheckoutsPage() {
           <h1 className="text-2xl font-bold text-white">Checkouts</h1>
           <p className="text-slate-400 text-sm mt-0.5">{checkouts.length} total records</p>
         </div>
+        {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
         {overdueCount > 0 && (
           <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />

@@ -27,10 +27,16 @@ export default function DisposalPage() {
 
   async function load() {
     setLoading(true);
-    const [dispRes, assetRes] = await Promise.all([getDisposals(), getAssets()]);
-    setDisposals(dispRes.data);
-    setAssets(assetRes.data);
-    setLoading(false);
+    setError("");
+    try {
+      const [dispRes, assetRes] = await Promise.all([getDisposals(), getAssets()]);
+      setDisposals(dispRes.data);
+      setAssets(assetRes.data);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Failed to load disposal records.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -74,6 +80,7 @@ export default function DisposalPage() {
           + Record Disposal
         </button>
       </div>
+      {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
 
       {loading ? (
         <LoadingSkeleton />

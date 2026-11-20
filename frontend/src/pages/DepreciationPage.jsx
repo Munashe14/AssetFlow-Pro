@@ -18,7 +18,7 @@ export default function DepreciationPage() {
             setError("");
             try {
                 const assetsRes = await getAssets();
-                const assetList = assetsRes.data || [];
+                const assetList = assetsRes.data;
                 setAssets(assetList);
 
                 const results = await Promise.all(
@@ -37,8 +37,8 @@ export default function DepreciationPage() {
                     nextMap[assetId] = data;
                 });
                 setDepreciationMap(nextMap);
-            } catch {
-                setError("Failed to load depreciation data.");
+            } catch (loadError) {
+                setError(loadError instanceof Error ? loadError.message : "Failed to load depreciation data.");
             } finally {
                 setLoading(false);
             }

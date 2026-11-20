@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {getAssets} from "../api/asset";
 import AssetTable from "../components/AssetTable";
 import AddAssetModal from "../components/AddAssetModal";
@@ -11,10 +11,19 @@ export default function AssetsPage() {
     const [filterStatus, setFilter] =useState("all");
     const [showAdd, setShowAdd]     = useState(false);
     const [showScanner, setScanner] =useState(false);
+    const [error, setError] = useState("");
 
-    useEffect(() => {
-        getAssets().then(res => setAssets(res.data));
+    const loadAssets = useCallback(async () => {
+        setError("");
+        try {
+            const response = await getAssets();
+            setAssets(response.data);
+        } catch (loadError) {
+            setError(loadError instanceof Error ? loadError.message : "Failed to load assets.");
+        }
     }, []);
+
+    useEffect(() => { loadAssets(); }, [loadAssets]);
 
     // When scanner reads a barcode, filter to matching asset tag
     function handleScan(tag) {
@@ -66,8 +75,9 @@ export default function AssetsPage() {
         </select>
       </div>
 
-      <AssetTable assets={filtered} onRefresh={() => getAssets().then(r => setAssets(r.data))} />
-        {showAdd && <AddAssetModal onClose={() => setShowAdd(false)} onCreated={() => getAssets().then(r => setAssets(r.data))}/>}
+      {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
+      <AssetTable assets={filtered} onRefresh={loadAssets} />
+        {showAdd && <AddAssetModal onClose={() => setShowAdd(false)} onCreated={loadAssets}/>}
         {showScanner && <BarcodeScanner onScan={handleScan} onClose={() => setScanner(false)} />} 
     </div>
   )

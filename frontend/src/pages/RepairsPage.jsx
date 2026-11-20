@@ -27,10 +27,16 @@ export default function RepairsPage() {
 
   async function load() {
     setLoading(true);
-    const [rRes, aRes] = await Promise.all([getRepairs(), getAssets()]);
-    setRepairs(rRes.data);
-    setAssets(aRes.data);
-    setLoading(false);
+    setError("");
+    try {
+      const [rRes, aRes] = await Promise.all([getRepairs(), getAssets()]);
+      setRepairs(rRes.data);
+      setAssets(aRes.data);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Failed to load repair records.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -99,6 +105,7 @@ export default function RepairsPage() {
         placeholder="Search by asset, technician, or issue…"
         className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 w-72 focus:outline-none focus:border-teal-500 placeholder-slate-500"
       />
+      {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
 
       {loading ? (
         <div className="space-y-2 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-12 bg-slate-800 rounded-xl" />)}</div>

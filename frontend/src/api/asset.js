@@ -1,9 +1,9 @@
-import { data } from "react-router-dom";
 import api from "./axios";
+import { expectArrayResponse } from "./response";
 
 
 export const getAssets = () =>
-    api.get("/assets");
+    api.get("/assets").then(response => expectArrayResponse(response, "Assets"));
 
 export const getAsset = (id) =>
     api.get(`/assets/${id}`);
@@ -28,4 +28,3 @@ export const deleteAsset = (id) =>
 
 export const getAssetByTag = (tag) =>
     api.get(`/assets/?tag=${tag}`);
-
