@@ -4,9 +4,18 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Use a persistent disk path on Render, or the local project path for development.
-DATABASE_PATH = os.getenv("DATABASE_PATH", "assets.db")
-Path(DATABASE_PATH).parent.mkdir(parents=True, exist_ok=True)
+# Use a persistent disk path on Render when mounted. Fall back to local storage
+# if the configured mount is missing or not writable (for example on Render free mode).
+configured_database_path = os.getenv("DATABASE_PATH", "assets.db")
+DATABASE_PATH = configured_database_path
+
+try:
+    database_parent = Path(DATABASE_PATH).parent
+    database_parent.mkdir(parents=True, exist_ok=True)
+    with open(DATABASE_PATH, "a"):
+        pass
+except (OSError, PermissionError):
+    DATABASE_PATH = "assets.db"
 
 DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 
