@@ -17,6 +17,7 @@ from .routers.reports import router as reports_router
 from .routers.notifications import router as notifications_router
 from .routers.audit_logs import router as audit_logs_router
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 models.Base.metadata.create_all(bind=engine)
 ensure_user_role_column()
@@ -26,9 +27,10 @@ ensure_asset_transaction_columns()
 
 app = FastAPI()
 
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[frontend_url, "http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

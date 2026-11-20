@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 
 
-SECRET_KEY = "your_secret_key"
+import os
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "demo-jwt-secret-change-me")
 ALGORITHM = "HS256"
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60

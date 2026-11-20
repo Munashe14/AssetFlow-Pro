@@ -1,8 +1,14 @@
+import os
+from pathlib import Path
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Location of the SQLite database file
-DATABASE_URL = "sqlite:///./assets.db"
+# Use a persistent disk path on Render, or the local project path for development.
+DATABASE_PATH = os.getenv("DATABASE_PATH", "assets.db")
+Path(DATABASE_PATH).parent.mkdir(parents=True, exist_ok=True)
+
+DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -25,7 +31,7 @@ def get_db():
 def ensure_user_role_column():
     import sqlite3
 
-    conn = sqlite3.connect("assets.db")
+    conn = sqlite3.connect(DATABASE_PATH)
     try:
         cur = conn.cursor()
         cur.execute("PRAGMA table_info(users)")
@@ -43,7 +49,7 @@ def ensure_user_role_column():
 def ensure_audit_log_table():
     import sqlite3
 
-    conn = sqlite3.connect("assets.db")
+    conn = sqlite3.connect(DATABASE_PATH)
     try:
         cur = conn.cursor()
         cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='audit_logs'")
@@ -71,7 +77,7 @@ def ensure_audit_log_table():
 def ensure_asset_columns():
     import sqlite3
 
-    conn = sqlite3.connect("assets.db")
+    conn = sqlite3.connect(DATABASE_PATH)
     try:
         cur = conn.cursor()
         cur.execute("PRAGMA table_info(assets)")
@@ -112,7 +118,7 @@ def ensure_asset_columns():
 def ensure_asset_transaction_columns():
     import sqlite3
 
-    conn = sqlite3.connect("assets.db")
+    conn = sqlite3.connect(DATABASE_PATH)
     try:
         cur = conn.cursor()
         cur.execute("PRAGMA table_info(asset_transactions)")
