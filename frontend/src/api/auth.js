@@ -1,12 +1,4 @@
-import axios from "axios";
 import api from "./axios";
-
-const configuredBaseURL = import.meta.env.VITE_API_BASE_URL;
-const BASE = configuredBaseURL || (
-    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-        ? "http://127.0.0.1:8000"
-        : ""
-);
 
 export const login = async (email, password) => {
   // Must send as application/x-www-form-urlencoded
@@ -14,7 +6,7 @@ export const login = async (email, password) => {
   params.append("username", email);   // OAuth2 field is "username"
   params.append("password", password);
 
-  const res = await axios.post(`${BASE}/auth/login`, params, {
+  const res = await api.post("/auth/login", params, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
   return res.data; // { access_token, token_type }

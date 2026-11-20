@@ -2,11 +2,15 @@ import axios from "axios";
 
 const configuredBaseURL = import.meta.env.VITE_API_BASE_URL;
 const localBaseURL = "http://127.0.0.1:8000";
-const baseURL = configuredBaseURL || (
-    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-        ? localBaseURL
-        : ""
+const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const configuredBaseURLIsLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(?:\/|$)/i.test(
+    configuredBaseURL || ""
 );
+const baseURL = configuredBaseURL && (!configuredBaseURLIsLocal || isLocalHost)
+    ? configuredBaseURL
+    : isLocalHost
+        ? localBaseURL
+        : "";
 
 const api = axios.create({
     baseURL,
