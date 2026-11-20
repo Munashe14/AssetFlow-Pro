@@ -1,7 +1,15 @@
 import axios from "axios";
 
+const configuredBaseURL = import.meta.env.VITE_API_BASE_URL;
+const localBaseURL = "http://127.0.0.1:8000";
+const baseURL = configuredBaseURL || (
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? localBaseURL
+        : ""
+);
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000",
+    baseURL,
     headers: {"Content-Type": "application/json"},
 });
 

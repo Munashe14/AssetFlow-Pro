@@ -17,6 +17,9 @@ from .routers.reports import router as reports_router
 from .routers.notifications import router as notifications_router
 from .routers.audit_logs import router as audit_logs_router
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 import os
 
 models.Base.metadata.create_all(bind=engine)
@@ -55,4 +58,23 @@ app.include_router(audit_logs_router, prefix="/audit-logs", tags=["audit-logs"])
 # Check the health of the application
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"} 
+    return {"status": "healthy"}
+
+
+frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+frontend_assets = frontend_dist / "assets"
+
+if frontend_assets.is_dir():
+    app.mount("/assets", StaticFiles(directory=frontend_assets), name="frontend-assets")
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+def serve_frontend(full_path: str):
+    requested_file = frontend_dist / full_path
+    if requested_file.is_file():
+        return FileResponse(requested_file)
+
+    index_file = frontend_dist / "index.html"
+    if index_file.is_file():
+        return FileResponse(index_file)
+    raise HTTPException(status_code=404, detail="Frontend build not found")

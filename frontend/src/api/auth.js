@@ -1,7 +1,12 @@
 import axios from "axios";
 import api from "./axios";
 
-const BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const configuredBaseURL = import.meta.env.VITE_API_BASE_URL;
+const BASE = configuredBaseURL || (
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:8000"
+        : ""
+);
 
 export const login = async (email, password) => {
   // Must send as application/x-www-form-urlencoded
